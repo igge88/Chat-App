@@ -22,8 +22,8 @@ function App() {
     const [formData, setFormData] = useState({
         FirstName: '',
         LastName: '',
-        Email: '',
-        Password: '',
+        email: '',
+        password: '',
     })
 
     const handleChange = (event) => {
@@ -62,12 +62,12 @@ function App() {
             <br />
             <label>
                 Email:
-                <input type="text" name="Email" onChange={handleChange} />
+                <input type="text" name="email" onChange={handleChange} />
             </label>
             <br />
             <label>
                 Password:
-                <input type="text" name="Password" onChange={handleChange} />
+                <input type="text" name="password" onChange={handleChange} />
             </label>
             <br />
             <button type="submit">Submit</button>

@@ -20,10 +20,8 @@ function App() {
 
     //Post data
     const [formData, setFormData] = useState({
-        FirstName: '',
-        LastName: '',
-        email: '',
-        password: '',
+        username: '',
+        password: ''
     })
 
     const handleChange = (event) => {
@@ -51,18 +49,8 @@ function App() {
     <div>
         <form onSubmit={handleSubmit}>
             <label>
-                FirstName:
-                <input type="text" name="FirstName" onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-                LastName:
-                <input type="text" name="LastName" onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-                Email:
-                <input type="text" name="email" onChange={handleChange} />
+                Username:
+                <input type="text" name="username" onChange={handleChange} />
             </label>
             <br />
             <label>
@@ -78,7 +66,7 @@ function App() {
 
         {data.map(item => (
             <div key={item.id}>
-                <p>{item.firstname} {item.lastname}</p>
+                <p>{item.username}</p>
                 </div>
         ))}
     </div>

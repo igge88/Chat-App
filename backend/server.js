@@ -1,12 +1,18 @@
-import { config } from "dotenv";
-import pkg from 'pg';
+import { config } from 'dotenv'
+import pkg from 'pg'
 
-const {Client} = pkg;
+const { Client } = pkg
 
-import express from 'express';
-import cors from 'cors';
-import bodyParser from "body-parser";
-import bcrypt from 'bcrypt';
+import express from 'express'
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import bcrypt from 'bcrypt'
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
+
+const generateUserId = () => {
+    const userId = uuidv4()
+    return userId
+}
 
 const app = express()
 //Dotenv
@@ -38,7 +44,7 @@ const client = new Client({
     user: process.env.USER
 })
 
-client.connect(function (err){
+client.connect(function (err) {
     if (err) throw err
     console.log('Database Connected')
 })
@@ -51,8 +57,8 @@ app.get('/', (req, res) => {
 //Users GET
 app.get('/users', async (req, res) => {
     try {
-        const result = await client.query('SELECT * FROM users');
-        res.json(result.rows);
+        const result = await client.query('SELECT * FROM users')
+        res.json(result.rows)
     } catch (err) {
         console.error(err)
         res.sendStatus(500)
@@ -66,7 +72,7 @@ app.post('/users/create-account', async (req, res) => {
         await client.query(
             'INSERT INTO users (username, password) VALUES ($1, $2)',
             [username, password]
-            );
+        )
         res.sendStatus(201)
     } catch (err) {
         console.error(err)
@@ -75,147 +81,168 @@ app.post('/users/create-account', async (req, res) => {
 })
 
 // Endpoint to retrieve all messages
-app.get('/api/messages', async (req, res) => {
+app.get('/messages', async (req, res) => {
     try {
-        const result = await client.query('SELECT * FROM messages');
-        res.json(result.rows);
+        const result = await client.query('SELECT * FROM messages')
+        res.json(result.rows)
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        console.error(err)
+        res.sendStatus(500)
     }
-});
+})
 
 // Endpoint to create a new conversation
-app.post('/api/conversations', async (req, res) => {
+app.post('/conversations', async (req, res) => {
     try {
-        const { participant1_id, participant2_id } = req.body;
+        const { participant1_id, participant2_id } = req.body
 
         // Insert the conversation into the database
-        const query = 'INSERT INTO conversations (participant1_id, participant2_id) VALUES ($1, $2) RETURNING id';
-        const result = await client.query(query, [participant1_id, participant2_id]);
+        const query =
+            'INSERT INTO conversations (participant1_id, participant2_id) VALUES ($1, $2) RETURNING id'
+        const result = await client.query(query, [
+            participant1_id,
+            participant2_id
+        ])
 
-        const conversationId = result.rows[0].id;
+        const conversationId = result.rows[0].id
 
-        res.status(201).json({ message: 'Conversation created successfully', conversationId });
+        res.status(201).json({
+            message: 'Conversation created successfully',
+            conversationId
+        })
     } catch (error) {
-        console.error('Error creating conversation', error);
-        res.status(500).json({ error: 'An error occurred while creating conversation' });
+        console.error('Error creating conversation', error)
+        res.status(500).json({
+            error: 'An error occurred while creating conversation'
+        })
     }
-});
+})
 
 // Endpoint to create a new message
-app.post('/api/messages', async (req, res) => {
-    const { message_id, sender_id, content} = req.body;
+app.post('/messages', async (req, res) => {
+    const { message_id, sender_id, content } = req.body
     try {
-        await client.query('INSERT INTO messages (message_id, sender_id, content) VALUES ($1, $2, $3)',
-        [message_id, sender_id, content]
-        );
-        res.sendStatus(201);
+        await client.query(
+            'INSERT INTO messages (message_id, sender_id, content) VALUES ($1, $2, $3)',
+            [message_id, sender_id, content]
+        )
+        res.sendStatus(201)
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        console.error(err)
+        res.sendStatus(500)
     }
-});
+})
 
 // API endpoint to delete a message by ID
-app.delete('/api/messages/:id', async (req, res) => {
-    const id = req.params.id;
+app.delete('/messages/:id', async (req, res) => {
+    const id = req.params.id
     try {
-        await client.query('DELETE FROM messages WHERE id = $1',
-        [id]
-        );
-        res.sendStatus(200);
+        await client.query('DELETE FROM messages WHERE id = $1', [id])
+        res.sendStatus(200)
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        console.error(err)
+        res.sendStatus(500)
     }
 })
 
 // Registration endpoint
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     try {
         // Insert the user into the database
-        const query = 'INSERT INTO users (username, password) VALUES ($1, $2)';
-        await client.query(query, [username, hashedPassword]);
+        const query = 'INSERT INTO users (username, password) VALUES ($1, $2)'
+        await client.query(query, [username, hashedPassword])
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully' })
     } catch (error) {
-        console.error('Error registering user', error);
-        res.status(500).json({ error: 'An error occurred while registering user'});
+        console.error('Error registering user', error)
+        res.status(500).json({
+            error: 'An error occurred while registering user'
+        })
     }
-});
+})
 
 // Login endpoint
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body
 
     try {
         // Retrieve the user from the database
-        const query = 'SELECT * FROM users WHERE username = $1';
-        const result = await client.query(query, [username]);
+        const query = 'SELECT * FROM users WHERE username = $1'
+        const result = await client.query(query, [username])
 
         if (result.rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'Invalid credentials' })
         }
 
         // Compare the provided password with the stored hashed password
-        const user = result.rows[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const user = result.rows[0]
+        const isPasswordValid = await bcrypt.compare(password, user.password)
 
         if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid credentials'});
+            return res.status(401).json({ error: 'Invalid credentials' })
         }
 
-        res.json({ message: 'Login successful', user });
+        // Generate a unique userId for the user
+        const userId = generateUserId()
+
+        res.json({ message: 'Login successful', user: { userId } })
     } catch (error) {
-        console.error('Error logging in user', error);
-        res.status(500).json({ error: 'An error occurred while logging in user' });
+        console.error('Error logging in user', error)
+        res.status(500).json({
+            error: 'An error occurred while logging in user'
+        })
     }
-});
+})
 
 // Middleware to verify user authentication
 const authenticateUser = (req, res, next) => {
     // Check if user is authenticated (e.g., by verifying session, token, etc.)
-     // For simplicity, we'll assume a user is authenticated if the request contains a valid user object
+    // For simplicity, we'll assume a user is authenticated if the request contains a valid user object
 
-     if(!req.body.user) {
+    if (!req.body.user) {
         return res.status(401).json({ error: 'Unauthenticated' })
-     }
+    }
 
-     next();
-};
+    next()
+}
 
 app.get('/conversations', authenticateUser, async (req, res) => {
-    const { userId } = req.body.user;
+    const { userId } = req.body.user
+
+    // Validate the userId
+    if (!uuidValidate(userId)) {
+        return res.status(400).json({ error: 'Invalid userId' })
+    }
 
     try {
         // Retrieve conversations for the user from the database
         const query = `
         SELECT c.id, u.username AS participant_username
-        FROM conversations AC c
-        INNER JOIN users AS u ON (u.id = CASE WHEN c.participant1_id = $1 THEN c.participant2_id ELSE c.participant_id END)
+        FROM conversations AS c
+        INNER JOIN users AS u ON (u.id = CASE WHEN c.participant1_id = $1 THEN c.participant2_id ELSE c.participant1_id END)
         WHERE c.participant1_id = $1 OR c.participant2_id = $1
-        `;
-        const result = await client.query(query, [userId]);
+      `
+        const result = await client.query(query, [userId])
 
-        res.json(result.rows);
+        res.json(result.rows)
     } catch (error) {
-        console.error('Error fetching conversations', error);
-        res.status(500).json({ error: 'An error occurred while fetching conversations'});
+        console.error('Error fetching conversations', error)
+        res.status(500).json({
+            error: 'An error occurred while fetching conversations'
+        })
     }
-});
+})
 
-   // Error handling middleware
-   app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  });
-
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err)
+    res.status(500).json({ error: 'Internal server error' })
+})
 
 app.listen(8800, () => {
     console.log('Server is running')

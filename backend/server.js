@@ -80,6 +80,106 @@ app.post('/users/create-account', async (req, res) => {
     }
 })
 
+/*--------- VARIANT-----------*/
+const authenticate = async (req, res, next) => {
+    const token = req.query.token
+    if (!token) {
+        return res.status(401).send('Token is missing')
+    }
+
+    const tokenRow = await client.query(
+        'SELECT * FROM tokens WHERE token = ?',
+        [token]
+    )
+
+    if (!tokenRow.rows[0]) {
+        return res.status(401).send('Invalid token')
+    }
+
+    req.userId = tokenRow.rows[0].user_id
+    next()
+}
+
+app.post('/messages', async (req, res) => {
+    const token = req.query.token
+    if (!token) {
+        return res.status(401).send('Invalid token')
+    }
+
+    const tokenData = await client.query(
+        'SELECT * FROM tokens WHERE token = ?',
+        [token]
+    )
+    if (!tokenData.rows[0]) {
+        return res.status(401).send('Invalid token')
+    }
+
+    const senderId = tokenData.rows[0].user_id
+    const { recipient_id, content } = req.body
+
+    if (!recipient_id || !content) {
+        return res.status(400).send('recipient id and content is missing')
+    }
+
+    const message = {
+        sender_id: senderId,
+        recipient_id,
+        content
+    }
+
+    try {
+        const result = await client.query(
+            `INSERT INTO messages (sender_id, recipient_id, content) VALUES ($1, $2, $3)`,
+            [message.sender_id, message.recipient_id, message.content]
+        )
+        message.id = result.rows[0].id
+        res.status(201).json(message)
+    } catch (error) {
+        console.error(error)
+        res.status(500).send('Server error')
+    }
+})
+app.post('/login', async (req, res) => {
+    if (!req.body.username) {
+        return res.status(400).send('Username is missing')
+    }
+
+    const user = await client.query(
+        'SELECT * FROM users WHERE username = $1',
+        [req.body.username]
+    )
+
+    if (!user.rows[0] || user.rows[0].password !== req.body.password) {
+        return res.status(401).send('Unauthorized')
+    }
+
+    const token = uuidv4()
+    await client.query('INSERT INTO tokens (user_id, token) VALUES ($1, $2)', [
+        user.rows[0].id,
+        token
+    ])
+
+    res.status(201).json({ token })
+})
+
+app.post('/logout', authenticate, async (req, res) => {
+    const token = req.query.token
+    await client.query('DELETE FROM tokens WHERE token = $1', [token])
+    res.status(200).send('Logged out succesfully')
+})
+
+app.get('/messages', authenticate, async (req, res) => {
+    const messages = await client.query(
+        'SELECT * FROM messages WHERE sender_id = $1 OR recipient_id = $2 ORDER BY created',
+        [req.userId, req.userId]
+    )
+    console.log(messages.rows)
+    res.send(messages.rows)
+})
+
+
+
+/*
 // Endpoint to retrieve all messages
 app.get('/messages', async (req, res) => {
     try {
@@ -243,7 +343,7 @@ app.use((err, req, res, next) => {
     console.error('Error:', err)
     res.status(500).json({ error: 'Internal server error' })
 })
-
+*/
 app.listen(8800, () => {
     console.log('Server is running')
 })

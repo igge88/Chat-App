@@ -88,7 +88,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const tokenRow = await client.query(
-        'SELECT * FROM tokens WHERE token = ?',
+        'SELECT * FROM tokens WHERE token = $1',
         [token]
     )
 
@@ -107,7 +107,7 @@ app.post('/messages', async (req, res) => {
     }
 
     const tokenData = await client.query(
-        'SELECT * FROM tokens WHERE token = ?',
+        'SELECT * FROM tokens WHERE token = $1',
         [token]
     )
     if (!tokenData.rows[0]) {
@@ -129,7 +129,7 @@ app.post('/messages', async (req, res) => {
 
     try {
         const result = await client.query(
-            `INSERT INTO messages (sender_id, recipient_id, content) VALUES ($1, $2, $3)`,
+            `INSERT INTO messages (sender_id, recipient_id, content) VALUES ($1, $2, $3) RETURNING id`,
             [message.sender_id, message.recipient_id, message.content]
         )
         message.id = result.rows[0].id
@@ -139,6 +139,7 @@ app.post('/messages', async (req, res) => {
         res.status(500).send('Server error')
     }
 })
+
 app.post('/login', async (req, res) => {
     if (!req.body.username) {
         return res.status(400).send('Username is missing')

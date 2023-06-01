@@ -1,18 +1,3 @@
-import './App.css';
-import { Login } from '../src/components/Login';
-
-
-function App() {
-    return (
-        <div className="App">
-        <Login />
-        </div>
-    )
-}
-
-export default App
-
-
 /*
 import './App.css'
 import axios from 'axios'
@@ -60,6 +45,7 @@ function App() {
 
     }
 
+export const Login = () => {
   return (
     <>
     <div>
@@ -90,5 +76,15 @@ function App() {
   )
 }
 
-export default App
+export default Login
 */
+export const Login = () => {
+    return (
+        <form>
+            <label htmlFor="email">email</label>
+            <input type="text" placeholder="yourusername" id="username" name="username" />
+            <label htmlFor="password">password</label>
+            <input type="password" placeholder="*******" id="password"/>
+        </form>
+    )
+}

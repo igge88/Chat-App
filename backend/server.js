@@ -60,7 +60,7 @@ app.get('/users', async (req, res) => {
     }
 })
 
-// Users POST
+/* NOT IN USE
 app.post('/users/create-account', async (req, res) => {
     const { username, password } = req.body
     try {
@@ -74,6 +74,7 @@ app.post('/users/create-account', async (req, res) => {
         res.sendStatus(500)
     }
 })
+*/
 
 
 // Endpoint to retrieve all messages

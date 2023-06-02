@@ -1,33 +1,26 @@
-//import { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { useState } from 'react';
+//import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import './App.css';
 import { Login } from '../src/components/Login';
 import { Register } from '../src/components/Register';
-import { ChatPage } from '../src/components/ChatPage';
+//import { ChatPage } from '../src/components/ChatPage';
 //import { Routes, Route, Link, } from 'react-router-dom'
 
 function App() {
-    /*const [currentForm, setCurrentForm] = useState('login');
+    const [currentForm, setCurrentForm] = useState('login');
 
     const toggleForm = (formName) => {
         setCurrentForm(formName);
-    }*/
+    }
 
     return (
         <>
-        <Router>
          <div className="App">
-         {/*{
+         {
             currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
-         }*/}
-
-         <Switch>
-          <Route exact path="/" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/messages" component={ChatPage} />
-         </Switch>
+         }
          </div>
-        </Router>
+
 {/*
 <Routes>
 <Route path="/" element={<Login />} />

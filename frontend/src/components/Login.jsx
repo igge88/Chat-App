@@ -1,10 +1,9 @@
-/*
-import './App.css'
+/* eslint-disable react/no-unescaped-entities */
 import axios from 'axios'
 import {useState, useEffect} from 'react'
 
 
-function App() {
+export const Login = (props) => {
 
     const [data, setData] = useState([])
     const [success, setSuccess] = useState(false)
@@ -36,7 +35,7 @@ function App() {
         event.preventDefault();
         axios.post('http://localhost:8800/users/create-account', formData)
         .then(() => {
-            //Handle succes
+            //Handle success
             setSuccess(true);
         })
         .catch(() => {
@@ -45,46 +44,40 @@ function App() {
 
     }
 
-export const Login = () => {
   return (
     <>
-    <div>
-        <form onSubmit={handleSubmit}>
-            <label>
-                Username:
-                <input type="text" name="username" onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-                Password:
-                <input type="text" name="password" onChange={handleChange} />
-            </label>
-            <br />
-            <button type="submit">Submit</button>
+    <div className='form-container'>
+        <h2>Log In</h2>
+        <form className='login-form' onSubmit={handleSubmit}>
+            <label htmlFor="username">username</label>
+            <input type="text" id="username" name="username" onChange={handleChange} />
+            <label htmlFor='password'>password</label>
+            <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
+            <button type="submit">Log In</button>
             <div>
                 {success && <p>Form is submittted</p>}
             </div>
         </form>
-
-        {data.map(item => (
-            <div key={item.id}>
-                <p>{item.username}</p>
-                </div>
-        ))}
+        <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>
     </div>
     </>
   )
 }
 
 export default Login
-*/
+
+
+/*
+import React, { useState } from 'react'
+
 export const Login = () => {
     return (
         <form>
-            <label htmlFor="email">email</label>
+            <label htmlFor="username">Username</label>
             <input type="text" placeholder="yourusername" id="username" name="username" />
-            <label htmlFor="password">password</label>
+            <label htmlFor="password">Password</label>
             <input type="password" placeholder="*******" id="password"/>
         </form>
     )
 }
+*/

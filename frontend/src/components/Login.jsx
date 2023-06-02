@@ -25,6 +25,7 @@ export const Login = (props) => {
         .then(() => {
             //Handle success
             setSuccess(true);
+            props.onLoginSuccess();
         })
         .catch(() => {
             //Handle errors

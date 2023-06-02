@@ -33,7 +33,7 @@ export const Login = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:8800/users/create-account', formData)
+        axios.post('http://localhost:8800/users', formData)
         .then(() => {
             //Handle success
             setSuccess(true);
@@ -43,6 +43,8 @@ export const Login = (props) => {
         })
 
     }
+
+
 
   return (
     <>

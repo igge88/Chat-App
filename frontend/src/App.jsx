@@ -1,8 +1,9 @@
 import { useState } from 'react';
-//import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+//import { BrowserRouter} from 'react-router-dom'
 import './App.css';
 import { Login } from '../src/components/Login';
 import { Register } from '../src/components/Register';
+import ConversationList from '../src/components/ConversationList'
 //import { ChatPage } from '../src/components/ChatPage';
 //import { Routes, Route, Link, } from 'react-router-dom'
 
@@ -19,6 +20,7 @@ function App() {
          {
             currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
          }
+         <ConversationList />
          </div>
 
 {/*

@@ -7,7 +7,7 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import bcrypt from 'bcrypt'
-
+import jwt from 'jsonwebtoken'
 
 const app = express()
 //Dotenv
@@ -76,7 +76,6 @@ app.post('/users/create-account', async (req, res) => {
 })
 */
 
-
 // Endpoint to retrieve all messages
 app.get('/messages', async (req, res) => {
     try {
@@ -96,10 +95,7 @@ app.post('/conversations', async (req, res) => {
         // Insert the conversation into the database
         const query =
             'INSERT INTO conversations (user1_id, user2_id) VALUES ($1, $2) RETURNING conversation_id'
-        const result = await client.query(query, [
-            user1_id,
-            user2_id
-        ])
+        const result = await client.query(query, [user1_id, user2_id])
 
         const conversationId = result.rows[0].id
 
@@ -165,7 +161,7 @@ app.post('/register', async (req, res) => {
     }
 })
 
-// Login endpoint
+/* Login endpoint WITHOUT JWT token
 app.post('/login', async (req, res) => {
     const { username, password } = req.body
 
@@ -191,9 +187,84 @@ app.post('/login', async (req, res) => {
         console.error('Error logging in user', error)
         res.status(500).json({ error: 'An error occurred while logging in user'});
     }
+})*/
+
+// Login endpoint WITH JWT token
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body
+
+    try {
+        // Retrieve the user from the database
+        const query = 'SELECT * FROM users WHERE username = $1'
+        const result = await client.query(query, [username])
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' })
+        }
+
+        // Compare the provided password with the stored hashed password
+        const user = result.rows[0]
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid credentials' })
+        }
+
+        // Generate a JWT token
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET)
+
+        res.json({ message: 'Login successful', token })
+    } catch (error) {
+        console.error('Error logging in user', error)
+        res.status(500).json({
+            error: 'An error occurred while logging in user'
+        })
+    }
 })
 
-// Middleware to verify user authentication
+// Middleware to verify user authentication WITH JWT token
+const authenticateUser = (req, res, next) => {
+    const token = req.headers.authorization
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthenticated' })
+    }
+
+    try {
+        // Verify the JWT token
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = decodedToken
+        next()
+    } catch (error) {
+        console.error('Error verifying JWT token', error)
+        res.status(401).json({ error: 'Invalid token' })
+    }
+}
+
+// Fetch conversations endpoint
+app.get('/conversations', authenticateUser, async (req, res) => {
+    const { userId } = req.user
+
+    try {
+        // Retrieve conversations for the user from the database
+        const query = `
+            SELECT c.conversation_id, u.username AS user_username
+            FROM conversations AS c
+            INNER JOIN users AS u ON (u.user_id = CASE WHEN c.user1_id = $1 THEN c.user2_id ELSE c.user1_id END)
+            WHERE c.user1_id = $1 OR c.user2_id = $1
+        `
+        const result = await client.query(query, [userId])
+
+        res.json(result.rows)
+    } catch (error) {
+        console.error('Error fetching conversations', error)
+        res.status(500).json({
+            error: 'An error occurred while fetching conversations'
+        })
+    }
+})
+
+/* Middleware to verify user authentication WITHOUT JWT TOKEN
 const authenticateUser = (req, res, next) => {
     // Check if user is authenticated (e.g., by verifying session, token, etc.)
     // For simplicity, we'll assume a user is authenticated if the request contains a valid user object
@@ -225,13 +296,13 @@ app.get('/conversations', authenticateUser, async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching conversations' });
     }
 });
+*/
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err)
-    res.status(500).json({ error: 'Internal server error' });
-});
-
+    res.status(500).json({ error: 'Internal server error' })
+})
 
 /*--------- VARIANT With Token-----------
 const authenticate = async (req, res, next) => {
@@ -331,7 +402,6 @@ app.get('/messages', authenticate, async (req, res) => {
     res.send(messages.rows)
 })
 -----------------END of VARIANT with Token----------------------------*/
-
 
 app.listen(8800, () => {
     console.log('Server is running')

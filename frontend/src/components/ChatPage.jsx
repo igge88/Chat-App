@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
 const ChatPage = () => {
+    const { conversationId } = useParams();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState([]);
 
@@ -12,7 +14,7 @@ const ChatPage = () => {
 
     const fetchMessages = async () => {
         try {
-            const response = await axios.get('http://localhost:8800/messages');
+            const response = await axios.get(`http://localhost:8800/messages/${conversationId}`);
             setMessages(response.data);
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -21,7 +23,7 @@ const ChatPage = () => {
 
     const sendMessage = async () => {
         try {
-            await axios.post('http://localhost:8800/messages', { content: newMessage });
+            await axios.post(`http://localhost:8800/messages/${conversationId}`, { content: newMessage });
             setNewMessage('');
             // Optionally, fetch messages again to update the message list
             fetchMessages();

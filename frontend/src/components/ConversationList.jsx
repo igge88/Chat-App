@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'
 
 const ConversationList = () => {
     const [conversations, setConversations] = useState([]);
@@ -23,15 +24,19 @@ const ConversationList = () => {
         });
     }, []);
 
-    return (
-        <div>
-            <h2>Conversations</h2>
-            <ul>
-                {conversations.map((conversation) => (
-                    <li key={conversation.conversation_id}>{conversation.user_username}</li>
-                ))}
-            </ul>
-        </div>
+return (
+    <div>
+        <h2>Conversations</h2>
+        <ul>
+            {conversations.map((conversation) => (
+                <li key={conversation.conversation_id}>
+                    <Link to={`/chat/${conversation.conversation_id}`}>
+                        {conversation.user_username}
+                    </Link>
+                </li>
+            ))}
+        </ul>
+    </div>
 
     );
 };

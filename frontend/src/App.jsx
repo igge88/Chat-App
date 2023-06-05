@@ -23,13 +23,13 @@ function App() {
         <>
          <div>
 
-            <Link to= "/login"> Got ot Login </Link>
+            <Link to= "/login"> Go to Login </Link>
             <br />
-            <Link to= "/register"> Got ot Register </Link>
+            <Link to= "/register"> Go to Register </Link>
             <br />
-            <Link to= "/conversations"> Got to Conversations </Link>
+            <Link to= "/conversations"> Go to Conversations </Link>
             <br />
-            <Link to= "/messages"> Got ot ChatPage </Link>
+            <Link to= "/messages"> Go to ChatPage </Link>
             <br />
             <Link to= "/new-conversation-form"> Got to New Conversation Form </Link>
          </div>
@@ -37,7 +37,7 @@ function App() {
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
          <Route path="/conversations" element={<ConversationList />} />
-         <Route path="/messages" element={<ChatPage />} />
+         <Route path="/chat/:conversationId" element={<ChatPage />} />
          <Route path="/new-conversation-form" element={<NewConversationForm />} />
          </Routes>
 

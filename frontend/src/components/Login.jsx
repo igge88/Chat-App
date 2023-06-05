@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
+// WITH JWT token
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -22,15 +23,17 @@ export const Login = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios
-      .post('http://localhost:8800/login', formData)
+    axios.post('http://localhost:8800/login', formData)
       .then((response) => {
+        const { user, token } = response.data;
+
+        // Store user ID and token in local storage
+        localStorage.setItem('userId', user.user_id);
+        localStorage.setItem('token', token);
+
         //Handle success
-        const { token } = response.data; // Assuming the server returns the token in the response
-        localStorage.setItem('token', token); // Store the token in localStorage
         setSuccess(true);
-        // Redirect the user to the ConversationList component
-        navigate('/conversations');
+        navigate('/conversations'); // Redirect the user to the ConversationList component
       })
       .catch(() => {
         //Handle errors
@@ -87,7 +90,7 @@ export const Login = (props) => {
 
     </div>
 
-    {/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button> */}
+    {/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>*/}
 
 </div>
 
@@ -99,12 +102,15 @@ export const Login = (props) => {
 export default Login;
 
 
-/* WITHOUT JWT token
+
+/*WITHOUT JWT token
 import axios from 'axios'
 import {useState} from 'react'
+import { useNavigate, Link } from 'react-router-dom';
 
 
 export const Login = (props) => {
+    const navigate = useNavigate();
     const [success, setSuccess] = useState(false)
 
     //Post data
@@ -126,6 +132,8 @@ export const Login = (props) => {
         .then(() => {
             //Handle success
             setSuccess(true);
+            // Redirect the user to the ConversationList component
+        navigate('/conversations');
         })
         .catch(() => {
             //Handle errors
@@ -135,6 +143,7 @@ export const Login = (props) => {
 
   return (
     <>
+    {/*}
     <div className='form-container'>
         <h2>Log In</h2>
         <form className='login-form' onSubmit={handleSubmit}>
@@ -149,7 +158,43 @@ export const Login = (props) => {
         </form>
         <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>
     </div>
+    *Avsluta kommentar här
+    <div className='App'>
+
+<div className='form-container'>
+
+    <h2>Log In</h2>
+
+    <form className='login-form' onSubmit={handleSubmit}>
+
+        <label htmlFor="username">username</label>
+
+        <input type="text" id="username" name="username" onChange={handleChange} />
+
+        <label htmlFor='password'>password</label>
+
+        <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
+
+        <button type="submit">Log In</button>
+
+        <div>
+
+            {success && <p>Form is submittted</p>}
+
+        </div>
+
+    </form>
+
+    <Link to="/register"><button className='link-btn'>Don't have an account? Register here.</button></Link>
+
+</div>
+
+{/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>
+
+</div>
     </>
   )
 }
+
+export default Login
 */

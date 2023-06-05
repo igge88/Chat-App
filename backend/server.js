@@ -161,7 +161,7 @@ app.post('/register', async (req, res) => {
     }
 })
 
-/* Login endpoint WITHOUT JWT token
+/*Login endpoint WITHOUT JWT token
 app.post('/login', async (req, res) => {
     const { username, password } = req.body
 
@@ -187,7 +187,8 @@ app.post('/login', async (req, res) => {
         console.error('Error logging in user', error)
         res.status(500).json({ error: 'An error occurred while logging in user'});
     }
-})*/
+})
+*/
 
 // Login endpoint WITH JWT token
 app.post('/login', async (req, res) => {
@@ -211,9 +212,9 @@ app.post('/login', async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET)
+        const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET)
 
-        res.json({ message: 'Login successful', token })
+        res.json({ message: 'Login successful', user, token })
     } catch (error) {
         console.error('Error logging in user', error)
         res.status(500).json({
@@ -222,28 +223,30 @@ app.post('/login', async (req, res) => {
     }
 })
 
-//Middleware to verify user authentication WITH JWT token
+
+// Middleware to verify user authentication WITH JWT token
 const authenticateUser = (req, res, next) => {
-    const token = req.headers.authorization
+    // Check if user is authenticated
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'Unauthenticated' })
+        return res.status(401).json({ error: 'Unauthenticated' });
     }
 
-    try {
-        // Verify the JWT token
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = decodedToken
-        next()
-    } catch (error) {
-        console.error('Error verifying JWT token', error)
-        res.status(401).json({ error: 'Invalid token' })
-    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+
+        req.user = user;
+        next();
+    });
 }
 
 // Fetch conversations endpoint
 app.get('/conversations', authenticateUser, async (req, res) => {
-    const { userId } = req.user
+    const userId  = req.user.userId;
 
     try {
         // Retrieve conversations for the user from the database
@@ -252,20 +255,18 @@ app.get('/conversations', authenticateUser, async (req, res) => {
             FROM conversations AS c
             INNER JOIN users AS u ON (u.user_id = CASE WHEN c.user1_id = $1 THEN c.user2_id ELSE c.user1_id END)
             WHERE c.user1_id = $1 OR c.user2_id = $1
-        `
+        `;
         const result = await client.query(query, [userId])
 
         res.json(result.rows)
     } catch (error) {
         console.error('Error fetching conversations', error)
-        res.status(500).json({
-            error: 'An error occurred while fetching conversations'
-        })
+        res.status(500).json({ error: 'An error occurred while fetching conversations' });
     }
-})
+});
 
 
-/*Middleware to verify user authentication WITHOUT JWT TOKEN
+/* Middleware to verify user authentication WITHOUT JWT TOKEN
 const authenticateUser = (req, res, next) => {
     // Check if user is authenticated (e.g., by verifying session, token, etc.)
     // For simplicity, we'll assume a user is authenticated if the request contains a valid user object

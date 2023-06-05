@@ -11,7 +11,7 @@ const ConversationList = () => {
 
         axios.get('http://localhost:8800/conversations', {
             headers: {
-                Authorization: token // Send the JWT token in the request headers
+                Authorization: `Bearer ${token}` // Send the JWT token in the request headers
             }
         })
         .then((response) => {

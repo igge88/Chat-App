@@ -222,7 +222,7 @@ app.post('/login', async (req, res) => {
     }
 })
 
-// Middleware to verify user authentication WITH JWT token
+//Middleware to verify user authentication WITH JWT token
 const authenticateUser = (req, res, next) => {
     const token = req.headers.authorization
 
@@ -264,7 +264,8 @@ app.get('/conversations', authenticateUser, async (req, res) => {
     }
 })
 
-/* Middleware to verify user authentication WITHOUT JWT TOKEN
+
+/*Middleware to verify user authentication WITHOUT JWT TOKEN
 const authenticateUser = (req, res, next) => {
     // Check if user is authenticated (e.g., by verifying session, token, etc.)
     // For simplicity, we'll assume a user is authenticated if the request contains a valid user object

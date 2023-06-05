@@ -5,6 +5,7 @@ import Login from '../src/components/Login';
 import Register from '../src/components/Register';
 import ConversationList from '../src/components/ConversationList'
 import ChatPage from '../src/components/ChatPage';
+import NewConversationForm from './components/NewConversationForm';
 import { Routes, Route, Link, } from 'react-router-dom'
 
 function App() {
@@ -29,12 +30,15 @@ function App() {
             <Link to= "/conversations"> Got to Conversations </Link>
             <br />
             <Link to= "/messages"> Got ot ChatPage </Link>
+            <br />
+            <Link to= "/new-conversation-form"> Got to New Conversation Form </Link>
          </div>
          <Routes>
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
          <Route path="/conversations" element={<ConversationList />} />
          <Route path="/messages" element={<ChatPage />} />
+         <Route path="/new-conversation-form" element={<NewConversationForm />} />
          </Routes>
 
         </>

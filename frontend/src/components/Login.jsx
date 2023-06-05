@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import axios from 'axios';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const Login = (props) => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const Login = (props) => {
 
   return (
     <>
-      <div className="form-container">
+      {/* <div className="form-container">
         <h2>Log In</h2>
         <form className="login-form" onSubmit={handleSubmit}>
           <label htmlFor="username">Username</label>
@@ -49,13 +49,54 @@ export const Login = (props) => {
           <button type="submit">Log In</button>
           <div>{success && <p>Form is submitted</p>}</div>
         </form>
-        <button className="link-btn" onClick={() => props.onFormSwitch('register')}>
-          Don't have an account? Register here.
-        </button>
+        /*<button className="link-btn" onClick={() => props.onFormSwitch('register') </button>}>*
+        <Link to="/register"><button className='link-btn'>Don't have an account? Register here.</button></Link>
       </div>
-    </>
+          </>
   );
-};
+};*/}
+
+
+<div className='App'>
+
+    <div className='form-container'>
+
+        <h2>Log In</h2>
+
+        <form className='login-form' onSubmit={handleSubmit}>
+
+            <label htmlFor="username">username</label>
+
+            <input type="text" id="username" name="username" onChange={handleChange} />
+
+            <label htmlFor='password'>password</label>
+
+            <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
+
+            <button type="submit">Log In</button>
+
+            <div>
+
+                {success && <p>Form is submittted</p>}
+
+            </div>
+
+        </form>
+
+        <Link to="/register"><button className='link-btn'>Don't have an account? Register here.</button></Link>
+
+    </div>
+
+    {/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button> */}
+
+</div>
+
+</>
+
+)
+}
+
+export default Login;
 
 
 /* WITHOUT JWT token

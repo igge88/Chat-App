@@ -7,7 +7,7 @@ const ConversationList = () => {
     useEffect(() => {
         // Fetch the conversations from the server
         const token = localStorage.getItem('token'); // Get the JWT token from localStorage
-
+        console.log(token)
         axios.get('http://localhost:8800/conversations', {
             headers: {
                 Authorization: token // Send the JWT token in the request headers
@@ -30,6 +30,7 @@ const ConversationList = () => {
                 ))}
             </ul>
         </div>
+
     );
 };
 

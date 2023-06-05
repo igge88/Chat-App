@@ -1,37 +1,43 @@
-import { useState } from 'react';
+//import { useState } from 'react';
 //import { BrowserRouter} from 'react-router-dom'
 import './App.css';
-import { Login } from '../src/components/Login';
-import { Register } from '../src/components/Register';
+import Login from '../src/components/Login';
+import Register from '../src/components/Register';
 import ConversationList from '../src/components/ConversationList'
-//import { ChatPage } from '../src/components/ChatPage';
-//import { Routes, Route, Link, } from 'react-router-dom'
+import ChatPage from '../src/components/ChatPage';
+import { Routes, Route, Link, } from 'react-router-dom'
 
 function App() {
+    /*
     const [currentForm, setCurrentForm] = useState('login');
 
     const toggleForm = (formName) => {
         setCurrentForm(formName);
-    }
+
+          {
+            currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
+          }*/
 
     return (
         <>
-         <div className="App">
-         {
-            currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
-         }
-         <ConversationList />
-         </div>
+         <div>
 
-{/*
-<Routes>
-<Route path="/" element={<Login />} />
-<Route path="/register" element={<Register />} />
-<Route path="/conversations/:conversation_id/messages" element={<ChatPage />} />
-<Route path="/conversations" element={<Register />} />
-</Routes>
-*/}
-</>
+            <Link to= "/login"> Got ot Login </Link>
+            <br />
+            <Link to= "/register"> Got ot Register </Link>
+            <br />
+            <Link to= "/conversations"> Got to Conversations </Link>
+            <br />
+            <Link to= "/messages"> Got ot ChatPage </Link>
+         </div>
+         <Routes>
+         <Route path="/login" element={<Login />} />
+         <Route path="/register" element={<Register />} />
+         <Route path="/conversations" element={<ConversationList />} />
+         <Route path="/messages" element={<ChatPage />} />
+         </Routes>
+
+        </>
     )
 }
 

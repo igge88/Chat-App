@@ -1,3 +1,4 @@
+/*
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -40,3 +41,44 @@ const NewConversationForm = () => {
 };
 
 export default NewConversationForm;
+*/
+
+import { useState } from 'react';
+import axios from 'axios';
+
+const NewConversationForm = () => {
+  const [user2Id, setUser2Id] = useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const user1Id = localStorage.getItem('userId');
+    try {
+      const response = await axios.post('http://localhost:8800/conversations', {
+        user1_id: user1Id,
+        user2_id: user2Id
+      });
+      console.log('Conversation created:', response.data);
+      // Optionally, you can redirect the user to the chat page or perform any other actions
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+    }
+  };
+
+  const handleChange = (event) => {
+    setUser2Id(event.target.value);
+  };
+
+  return (
+    <div>
+      <h2>Create New Conversation</h2>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="user2_id">User 2 ID:</label>
+        <input type="text" id="user2_id" name="user2_id" value={user2Id} onChange={handleChange} />
+        <button type="submit">Create</button>
+      </form>
+    </div>
+  );
+};
+
+export default NewConversationForm;
+

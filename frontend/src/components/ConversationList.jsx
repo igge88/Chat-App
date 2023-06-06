@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const ConversationList = () => {
     const [conversations, setConversations] = useState([]);
+    const navigate = useNavigate(); // useNavigate hook from react-router-dom
 
     useEffect(() => {
         // Fetch the conversations from the server
@@ -24,6 +26,10 @@ const ConversationList = () => {
         });
     }, []);
 
+    const handleCreateConversation = () => {
+        navigate('/new-conversation-form'); 
+      };
+
 return (
     <div>
         <h2>Conversations</h2>
@@ -36,6 +42,9 @@ return (
                 </li>
             ))}
         </ul>
+        <button onClick={handleCreateConversation}>
+        Create new Conversation
+      </button>
     </div>
 
     );

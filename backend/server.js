@@ -78,6 +78,8 @@ app.post('/users/create-account', async (req, res) => {
 
 // Endpoint to retrieve all messages
 app.get('/messages', async (req, res) => {
+
+
     try {
         const result = await client.query('SELECT * FROM messages')
         res.json(result.rows)

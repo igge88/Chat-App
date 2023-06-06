@@ -193,17 +193,13 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
+import './ChatPage.css';
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userId, setUserId] = useState(null);
   const { conversationId } = useParams(); // Replace '1' with the conversation ID you want to fetch messages from
-
-
-
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -217,7 +213,6 @@ const ChatPage = () => {
 
   }, []);
 
-
   const fetchConversation = async () => {
 
     try {
@@ -226,14 +221,9 @@ const ChatPage = () => {
 
         return axios.get(`http://localhost:8800/users/${message.sender_id}`).then((userResponse) => {
           const senderUsername = userResponse.data.username;
-
           return { ...message, senderUsername };
         });
-
       });
-
-
-
 
       Promise.all(messagePromises)
         .then((messagesWithUsername) => {
@@ -268,6 +258,7 @@ const ChatPage = () => {
   };
 
   return (
+    /*
     <div className='container'>
       <h1>Chat Page</h1>
       <div className='message-list'>
@@ -289,6 +280,34 @@ const ChatPage = () => {
       <button className='btn btn_primary' onClick={sendMessage}>Send</button>
     </div>
     </div>
+    */
+   
+    <div className="container">
+    <h1>Chat Page</h1>
+    <div className="chat-container">
+      <div className="message-list">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`message ${message.sender_id === userId ? 'message-right' : 'message-left'}`}
+          >
+            <strong>{message.senderUsername}: </strong>
+            {message.content}
+          </div>
+        ))}
+      </div>
+      <div className="input-group">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Type your message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+        />
+        <button className="btn btn-primary" onClick={sendMessage}>Send</button>
+      </div>
+    </div>
+  </div>
   );
 };
 

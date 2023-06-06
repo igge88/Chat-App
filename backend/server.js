@@ -78,8 +78,6 @@ app.post('/users/create-account', async (req, res) => {
 
 // Endpoint to retrieve all messages
 app.get('/messages', async (req, res) => {
-
-
     try {
         const result = await client.query('SELECT * FROM messages')
         res.json(result.rows)
@@ -88,6 +86,63 @@ app.get('/messages', async (req, res) => {
         res.sendStatus(500)
     }
 })
+
+/*--------------LINUS/OSCARS VARIANT----------------*/
+app.get('/messages/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const query = 'SELECT * FROM messages WHERE conversation_id = $1'
+        const result = await client.query(query, [id])
+        const messages = result.rows
+        res.status(200).json({ messages })
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
+})
+
+app.get('/users/:id', async (req, res) => {
+    const userId = req.params.id
+
+    try {
+        const query = 'SELECT username FROM users WHERE user_id = $1'
+        const values = [userId]
+        const result = await client.query(query, values)
+        if (result.rows.length > 0) {
+            const user = result.rows[0]
+            res.status(200).json({ username: user.username })
+        } else {
+            res.status(404).json({ message: 'User not found' })
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Error fetching user' })
+    }
+})
+
+app.post('/messages', async (req, res) => {
+    const { conversation_id, sender_id, content } = req.body // Make sure to pass sender_id and conversation_id in the request body
+
+    try {
+        if (!content) {
+            return res.status(400).json({ error: 'Please fill in all fields' })
+        }
+
+        const query =
+            'INSERT INTO messages (conversation_id, sender_id, content) VALUES ($1, $2, $3) RETURNING *'
+        const values = [conversation_id, sender_id, content]
+        const result = await client.query(query, values)
+        const newMessage = result.rows[0]
+        res.status(201).json({
+            message: 'Message sent successfully',
+            message: newMessage
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Error sending message' })
+    }
+})
+/*----------------SLUT PÅ LINUS/OSCARS VARIANT----------*/
 
 // Endpoint to create a new conversation
 app.post('/conversations', async (req, res) => {
@@ -113,7 +168,7 @@ app.post('/conversations', async (req, res) => {
     }
 })
 
-// Endpoint to create a new message
+/* Endpoint to create a new message (IGGES)
 app.post('/messages', async (req, res) => {
     const { conversation_id, sender_id, content } = req.body
     try {
@@ -127,6 +182,7 @@ app.post('/messages', async (req, res) => {
         res.sendStatus(500)
     }
 })
+*/
 
 // API endpoint to delete a message by ID
 app.delete('/messages/:id', async (req, res) => {
@@ -225,30 +281,29 @@ app.post('/login', async (req, res) => {
     }
 })
 
-
 // Middleware to verify user authentication WITH JWT token
 const authenticateUser = (req, res, next) => {
     // Check if user is authenticated
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
 
     if (!token) {
-        return res.status(401).json({ error: 'Unauthenticated' });
+        return res.status(401).json({ error: 'Unauthenticated' })
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(401).json({ error: 'Invalid token' });
+            return res.status(401).json({ error: 'Invalid token' })
         }
 
-        req.user = user;
-        next();
-    });
+        req.user = user
+        next()
+    })
 }
 
 // Fetch conversations endpoint
 app.get('/conversations', authenticateUser, async (req, res) => {
-    const userId  = req.user.userId;
+    const userId = req.user.userId
 
     try {
         // Retrieve conversations for the user from the database
@@ -257,16 +312,17 @@ app.get('/conversations', authenticateUser, async (req, res) => {
             FROM conversations AS c
             INNER JOIN users AS u ON (u.user_id = CASE WHEN c.user1_id = $1 THEN c.user2_id ELSE c.user1_id END)
             WHERE c.user1_id = $1 OR c.user2_id = $1
-        `;
+        `
         const result = await client.query(query, [userId])
 
         res.json(result.rows)
     } catch (error) {
         console.error('Error fetching conversations', error)
-        res.status(500).json({ error: 'An error occurred while fetching conversations' });
+        res.status(500).json({
+            error: 'An error occurred while fetching conversations'
+        })
     }
-});
-
+})
 
 /* Middleware to verify user authentication WITHOUT JWT TOKEN
 const authenticateUser = (req, res, next) => {

@@ -122,6 +122,7 @@ const ChatPage = () => {
 export default ChatPage;
 */
 
+/* VARIANT 2
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -183,5 +184,113 @@ const ChatPage = () => {
     </div>
   );
 };
+
+export default ChatPage;
+*/
+
+// VARIANT Oscars
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+
+const ChatPage = () => {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [userId, setUserId] = useState(null);
+  const { conversationId } = useParams(); // Replace '1' with the conversation ID you want to fetch messages from
+
+
+
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedUserId = localStorage.getItem('userId');
+    console.log(storedUserId);
+
+    if (storedUserId) {
+      setUserId(storedUserId);
+      fetchConversation();
+    }
+
+  }, []);
+
+
+  const fetchConversation = async () => {
+
+    try {
+      const response = await axios.get(`http://localhost:8800/messages/${conversationId}`);
+      const messagePromises = response.data.messages.map((message) => {
+
+        return axios.get(`http://localhost:8800/users/${message.sender_id}`).then((userResponse) => {
+          const senderUsername = userResponse.data.username;
+
+          return { ...message, senderUsername };
+        });
+
+      });
+
+
+
+
+      Promise.all(messagePromises)
+        .then((messagesWithUsername) => {
+          setMessages(messagesWithUsername);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error('Error fetching conversation:', error);
+    }
+  };
+
+  const sendMessage = () => {
+    axios
+      .post('http://localhost:8800/messages', {
+        content: newMessage,
+        sender_id: userId,
+        conversation_id: conversationId,
+      })
+      .then((response) => {
+        const newMessage = response.data.message;
+        const senderUsername = response.data.username;
+        const messageWithUsername = { ...newMessage, senderUsername };
+        setMessages((prevMessages) => [...prevMessages, messageWithUsername]);
+        setNewMessage('');
+        fetchConversation();
+      })
+      .catch((error) => {
+        console.error('Error sending message', error);
+      });
+  };
+
+  return (
+    <div className='container'>
+      <h1>Chat Page</h1>
+      <div className='message-list'>
+        {messages.map((message) => (
+          <div key={message.id}>
+            <strong>{message.senderUsername}: </strong>
+            {message.content}
+          </div>
+        ))}
+      </div>
+      <div className='input-group mb-3'>
+      <input
+        type="text"
+        className='form-control'
+        placeholder="Type your message..."
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+      />
+      <button className='btn btn_primary' onClick={sendMessage}>Send</button>
+    </div>
+    </div>
+  );
+};
+
 
 export default ChatPage;

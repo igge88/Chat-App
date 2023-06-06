@@ -59,50 +59,35 @@ export const Login = (props) => {
   );
 };*/}
 
-
-<div className='App'>
-
-    <div className='form-container'>
-
-        <h2>Log In</h2>
-
-        <form className='login-form' onSubmit={handleSubmit}>
-
-            <label htmlFor="username">username</label>
-
-            <input type="text" id="username" name="username" onChange={handleChange} />
-
-            <label htmlFor='password'>password</label>
-
-            <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
-
-            <button type="submit">Log In</button>
-
-            <div>
-
-                {success && <p>Form is submittted</p>}
-
-            </div>
-
-        </form>
-
-        <Link to="/register"><button className='link-btn'>Don't have an account? Register here.</button></Link>
-
+<div className='Login-Register-Form'>
+    <div className='flex-container'>
+        <div className='Hero-text'>
+            <p>GoodTalk</p>
+        </div>
+            <div className='form-container'>
+            <h2>Log In</h2>
+            <form className='login-form' onSubmit={handleSubmit}>
+                <label htmlFor="username">Username</label>
+                <input type="text" id="username" name="username" onChange={handleChange} />
+                <label htmlFor='password'>Password</label>
+                <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
+                <button className="loginButton" type="submit">Log In</button>
+                    <div>
+                        {success && <p>Form is submittted</p>}
+                    </div>
+            </form>
+            <Link to="/register"><button className='link-btn'>Don't have an account? Register here.</button></Link>
+        </div>
     </div>
-
-    {/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>*/}
-
 </div>
-
 </>
-
 )
 }
 
 export default Login;
 
 
-
+/* <button className='link-btn' onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>*/
 /*WITHOUT JWT token
 import axios from 'axios'
 import {useState} from 'react'

@@ -33,7 +33,37 @@ export const Register = (props) => {
 
     }
 
-   /* return (
+    return (
+        <>
+    <div className='Login-Register-Form'>
+    <div className='flex-container'>
+        <div className='Hero-text'>
+            <p>GoodTalk</p>
+        </div>
+
+        <div className='form-container'>
+            <h2>Register</h2>
+            <form className='register-form' onSubmit={handleSubmit}>
+                <label htmlFor="username">Choose a username</label>
+                <input type="text" id="username" name="username" onChange={handleChange} />
+                <label htmlFor='password'>Choose a password</label>
+                <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
+                <button className='loginButton' type="submit">Register</button>
+                <div>
+                    {success && <p>Form is submittted</p>}
+                </div>
+            </form>
+            <Link to="/login"><button className='link-btn'>Already have an account? Login here.</button></Link>
+        </div>
+    </div>
+    </div>
+    </>
+    )
+}
+
+export default Register;
+
+ /* return (
         <>
     <div className='form-container'>
         <h2>Register</h2>
@@ -52,50 +82,4 @@ export const Register = (props) => {
     </div>
     </>
     )*/
-    return (
-
-        <>
-
-    <div className='App'>
-
-        <div className='form-container'>
-
-            <h2>Register</h2>
-
-            <form className='register-form' onSubmit={handleSubmit}>
-
-                <label htmlFor="username">username of choice</label>
-
-                <input type="text" id="username" name="username" onChange={handleChange} />
-
-                <label htmlFor='password'>password</label>
-
-                <input type="password" placeholder="********" id="password" name="password" onChange={handleChange} />
-
-                <button type="submit">Register</button>
-
-                <div>
-
-                    {success && <p>Form is submittted</p>}
-
-                </div>
-
-            </form>
-
-            <Link to="/login"><button className='link-btn'>Already have an account? Login here.</button></Link>
-
-
-
-
-        </div>
-
-        {/* <button className='link-btn' onClick={() => props.onFormSwitch('login')}>Already have an account? Login here.</button> */}
-
-    </div>
-
-    </>
-
-    )
-}
-
-export default Register;
+/* <button className='link-btn' onClick={() => props.onFormSwitch('login')}>Already have an account? Login here.</button> */

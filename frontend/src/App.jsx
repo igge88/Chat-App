@@ -34,6 +34,7 @@ function App() {
             <Link to= "/new-conversation-form"> Got to New Conversation Form </Link>
          </div>
          <Routes>
+         <Route path="/" element={<Login />} />
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
          <Route path="/conversations" element={<ConversationList />} />

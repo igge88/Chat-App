@@ -27,7 +27,7 @@ const ConversationList = () => {
     }, []);
 
     const handleCreateConversation = () => {
-        navigate('/new-conversation-form'); 
+        navigate('/new-conversation-form');
       };
 
 return (

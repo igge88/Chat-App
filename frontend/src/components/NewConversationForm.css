@@ -1,0 +1,49 @@
+.newconversationform-page {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(80deg, #079231, #17ac93 48%, #031cad);
+}
+
+.newconversationform, .newconversation {
+    display: flex;
+    flex-direction: column;
+}
+
+.newconversation {
+    border: solid transparent;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.cancel-button {
+    margin: 10px;
+    text-align: left;
+}
+
+.submit-button{
+    margin-bottom: 2rem;
+}
+
+.mb-3 {
+    margin-left: 3rem;
+    margin-right: 3rem;
+}
+
+.headerLinus {
+    margin-top: 1rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
+}
+
+@media screen and (max-width: 600px){
+    .newconversation {
+        max-width:300px ;
+        padding:10px;
+    }
+}

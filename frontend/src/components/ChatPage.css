@@ -20,6 +20,8 @@
   .header {
     display: flex;
     align-items: center;
+    margin: 0;
+    color: white;
   }
 
   .message-list {
@@ -65,7 +67,7 @@
 
   .bi-caret-left-fill {
     color: white;
-    ;
+    padding-right: px;
   }
   @media screen and (max-width: 380px) {
     .chat-container {

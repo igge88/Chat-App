@@ -6,7 +6,7 @@ import Register from '../src/components/Register';
 import ConversationList from '../src/components/ConversationList'
 import ChatPage from '../src/components/ChatPage';
 import NewConversationForm from './components/NewConversationForm';
-import { Routes, Route, Link, } from 'react-router-dom'
+import { Routes, Route, } from 'react-router-dom'
 
 function App() {
     /*

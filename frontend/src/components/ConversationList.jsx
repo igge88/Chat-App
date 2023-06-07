@@ -1,87 +1,68 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { ListGroup } from 'react-bootstrap';
+import { SlLogout } from 'react-icons/sl';
+import './ConversationList.css';
 
 
 const ConversationList = () => {
-    const [conversations, setConversations] = useState([]);
-    const navigate = useNavigate(); // useNavigate hook from react-router-dom
+const [conversations, setConversations] = useState([]);
 
-    useEffect(() => {
-        // Fetch the conversations from the server
-        const token = localStorage.getItem('token'); // Get the JWT token from localStorage
-        console.log(token)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
 
-        axios.get('http://localhost:8800/conversations', {
-            headers: {
-                Authorization: `Bearer ${token}` // Send the JWT token in the request headers
-            }
-        })
-        .then((response) => {
-            console.log(response.data)
-            setConversations(response.data);
-        })
-        .catch((error) => {
-            console.error('Error fetching conversations', error);
-        });
-    }, []);
+    axios
+      .get('http://localhost:8800/conversations', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setConversations(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching conversations', error);
+      });
+  }, []);
 
-    const handleCreateConversation = () => {
-        navigate('/new-conversation-form');
-      };
 
-return (
-    <div>
-        <h2>Conversations</h2>
-        <ul>
-            {conversations.map((conversation) => (
-                <li key={conversation.conversation_id}>
-                    <Link to={`/chat/${conversation.conversation_id}`}>
-                        {conversation.user_username}
-                    </Link>
-                </li>
-            ))}
-        </ul>
-        <button onClick={handleCreateConversation}>
-        Create new Conversation
-      </button>
+
+
+  return (
+    <div className="conversation-page">
+      <div className="header-container">
+        <div className="header">
+        </div>
+        <div>
+          <Link to="/login" className="logout-button">
+            <SlLogout />
+          </Link>
+        </div>
+      </div>
+      <div className="conversation-list">
+      <h2 className="list-heading">Conversations</h2>
+
+        <ListGroup className="list-group">
+          {conversations.map((conversation) => (
+            <ListGroup.Item key={conversation.conversation_id} className="list-item">
+              {/*<img src={conversation.user_image} alt="User" className="user-image" />*/}
+              <Link to={`/chat/${conversation.conversation_id}`} className="link">
+                {conversation.user_username}
+              </Link>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+        <div className="add-conversation-wrapper">
+          <Link to="/new-conversation-form" className="link-line">
+            <button className="add-conversation-button">+</button>
+          </Link>
+        </div>
+      </div>
     </div>
+  );
 
-    );
 };
+
 
 export default ConversationList;
-
-
-/* WITHOUT JWT token
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-
-const ConversationList = () => {
-    const [conversations, setConversations] = useState([]);
-
-    useEffect(() => {
-        // Fetch the conversations from the server
-        axios.get('http://localhost:8800/conversations')
-        .then((response) => {
-            setConversations(response.data);
-        })
-        .catch((error) => {
-            console.error('Error fetching conversations', error);
-        });
-    }, []);
-
-    return (
-        <div>
-            <h2>Conversations</h2>
-            <ul>
-                {conversations.map((conversation) =>(
-                    <li key={conversation.conversation_id}>{conversation.user_username}</li>
-                ))}
-            </ul>
-        </div>
-    );
-};
-
-export default ConversationList
-*/

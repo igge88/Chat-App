@@ -21,6 +21,7 @@ function App() {
 
     return (
         <>
+        {/*
          <div>
 
             <Link to= "/login"> Go to Login </Link>
@@ -33,6 +34,7 @@ function App() {
             <br />
             <Link to= "/new-conversation-form"> Got to New Conversation Form </Link>
          </div>
+    */}
          <Routes>
          <Route path="/" element={<Login />} />
          <Route path="/login" element={<Login />} />

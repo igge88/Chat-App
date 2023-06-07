@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* WHITOUT useParams
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -189,23 +188,24 @@ export default ChatPage;
 */
 
 // VARIANT Oscars
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef} from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ChatPage.css';
+import { Link, } from 'react-router-dom'
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userId, setUserId] = useState(null);
   const { conversationId } = useParams(); // Replace '1' with the conversation ID you want to fetch messages from
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
     console.log(storedUserId);
-
     if (storedUserId) {
       setUserId(storedUserId);
       fetchConversation();
@@ -214,13 +214,12 @@ const ChatPage = () => {
   }, []);
 
   const fetchConversation = async () => {
-
     try {
       const response = await axios.get(`http://localhost:8800/messages/${conversationId}`);
       const messagePromises = response.data.messages.map((message) => {
-
         return axios.get(`http://localhost:8800/users/${message.sender_id}`).then((userResponse) => {
           const senderUsername = userResponse.data.username;
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;//
           return { ...message, senderUsername };
         });
       });
@@ -257,59 +256,47 @@ const ChatPage = () => {
       });
   };
 
+
   return (
-    /*
-    <div className='container'>
-      <h1>Chat Page</h1>
-      <div className='message-list'>
-        {messages.map((message) => (
-          <div key={message.id}>
-            <strong>{message.senderUsername}: </strong>
-            {message.content}
+    <div className='wrapper'>
+        <div className="container">
+          <div className="header">
+          <Link to= "/conversations"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 2 16 16">
+  <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+</svg></Link>
+        <h1>Chat Page</h1>
+        </div>
+        <div className="chat-container" ref={chatContainerRef}>
+          <div className="message-list">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`message ${message.sender_id.toString() === userId ? 'message-right' : 'message-left'}`}
+              >
+                <div className='message-content'>
+                <strong>{message.senderUsername} </strong>
+                <br />
+                {message.content}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className='input-group mb-3'>
-      <input
-        type="text"
-        className='form-control'
-        placeholder="Type your message..."
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-      />
-      <button className='btn btn_primary' onClick={sendMessage}>Send</button>
-    </div>
-    </div>
-    */
-   
-    <div className="container">
-    <h1>Chat Page</h1>
-    <div className="chat-container">
-      <div className="message-list">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`message ${message.sender_id === userId ? 'message-right' : 'message-left'}`}
-          >
-            <strong>{message.senderUsername}: </strong>
-            {message.content}
+        </div>
+        <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Type your message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <button className="btn btn-primary" onClick={sendMessage}>Send</button>
           </div>
-        ))}
       </div>
-      <div className="input-group">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Type your message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-        />
-        <button className="btn btn-primary" onClick={sendMessage}>Send</button>
       </div>
-    </div>
-  </div>
-  );
-};
+      );
+    };
+
 
 
 export default ChatPage;

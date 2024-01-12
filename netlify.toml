@@ -1,7 +1,7 @@
 [build]
-  command = "node_modules/.bin/vite build"
+  command = "cd frontend && npm install && npm run build"
   publish = "frontend/dist"
-  
+
 [[redirects]]
   from = "/api/*"
   to = "/backend/:splat"

@@ -196,13 +196,15 @@ import './ChatPage.css';
 import { Link, } from 'react-router-dom'
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [userId, setUserId] = useState(null);
-  const { conversationId } = useParams(); // Replace '1' with the conversation ID you want to fetch messages from
-  const chatContainerRef = useRef(null);
+    // State variables
+  const [messages, setMessages] = useState([]); // Stores the list of messages in the conversation
+  const [newMessage, setNewMessage] = useState(''); // Stores the content of the new message being composed
+  const [userId, setUserId] = useState(null); // Stores the current user's ID
+  const { conversationId } = useParams(); // Extracts the conversation ID from the URL parameters / Replace '1' with the conversation ID you want to fetch messages from
+  const chatContainerRef = useRef(null); // References the chat container element
 
   useEffect(() => {
+    // Fetches the conversation and sets the user ID on component mount
     const storedToken = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
     console.log(storedUserId);
@@ -215,6 +217,7 @@ const ChatPage = () => {
 
   const fetchConversation = async () => {
     try {
+        // Fetches the conversation messages and the corresponding sender's username
       const response = await axios.get(`http://localhost:8800/messages/${conversationId}`);
       const messagePromises = response.data.messages.map((message) => {
         return axios.get(`http://localhost:8800/users/${message.sender_id}`).then((userResponse) => {
